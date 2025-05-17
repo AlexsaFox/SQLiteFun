@@ -1,4 +1,4 @@
-
+#include <iostream>
 #include "sqlite_orm.h"
 
   
@@ -187,6 +187,31 @@ auto storage = make_storage("db.sqlite",
                     foreign_key(&SimulationCarParam::simulation_id).references(&Simulation::id)));
 
 storage.sync_schema();
+
+Car rage {
+    0,
+    "Rage",
+};
+rage.car_id = storage.insert(rage);
+
+CarParameter tires_pressure {
+    0,
+    rage.car_id,
+    3,
+    0.2,
+    1.6,
+    0.1,
+};
+
+tires_pressure.id = storage.insert(tires_pressure);
+
+auto rows = storage.get_all<CarParameter>();
+
+std::cout << rows[0].type << std::endl;
+
+auto objects = storage.get_all<Car>(where(is_equal(&Car::car_id, rows[0].car_id)));
+
+std::cout << objects.front().name << std::endl;
 
 return 0;
 
